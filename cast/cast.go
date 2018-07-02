@@ -3,11 +3,20 @@
 //
 // The current implementation is based on the V2 format as of July 2nd, 2018.
 //
-// See https://github.com/asciinema/asciinema/blob/49a892d9e6f57ab3a774c0835fa563c77cf6a7a7/doc/asciicast-v2.md.
+// From [1], asciicast v2 file is a newline-delimited JSON file where:
+//
+// - first line contains header (initial terminal size, timestamp and other
+//   meta-data), encoded as JSON object; and
+// - all following lines form an event stream, each line representing a separate
+//   event, encoded as 3-element JSON array.
+//
+// [1]: https://github.com/asciinema/asciinema/blob/49a892d9e6f57ab3a774c0835fa563c77cf6a7a7/doc/asciicast-v2.md.
 package cast
 
 import (
+	"bufio"
 	"encoding/json"
+	"io"
 )
 
 // Header represents the asciicast header - a JSON-encoded object containing
@@ -95,4 +104,16 @@ type Cast struct {
 	// EventStream contains all the events that were generated during
 	// the recording.
 	EventStream []*Event
+}
+
+// Decode reads the whole contents of the reader passed as argument, validates
+// whether the stream contains a valid asciinema cast and then unmarshals it
+// into a cast struct.
+func Decode(r io.Reader) (cast *Cast, err error) {
+	return
+}
+
+// Encode writes the encoding of `Cast` into the writer passed as an argument.
+func Encode(w io.Writer, cast *Cast) (err error) {
+	return
 }

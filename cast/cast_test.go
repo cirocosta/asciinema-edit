@@ -8,5 +8,4 @@ import (
 )
 
 var _ = Describe("Cast", func() {
-
 })
