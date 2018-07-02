@@ -8,5 +8,10 @@ import (
 )
 
 var _ = Describe("Editor", func() {
-
+	Describe("Cut", func() {
+		Context("without cast", func() {
+			It("fails", func() {
+			})
+		})
+	})
 })
