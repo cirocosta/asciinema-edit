@@ -70,13 +70,29 @@ type Header struct {
 	} `json:"env,omitempty"`
 }
 
+// Event represents terminal inputs that get recorded by asciinema.
 type Event struct {
+	// Time indicates when this event happened, represented as the number
+	// of seconds since the beginning of the recording session.
 	Time float64
+
+	// Type represents the type of the data that's been recorded.
+	//
+	// Two types are possible:
+	// - "o": data written to stdout; and
+	// - "i": data read from stdin.
 	Type string
+
+	// Data represents the data recorded from the terminal.
 	Data string
 }
 
+// Cast represents the whole asciinema session.
 type Cast struct {
-	Header      Header
+	// Header presents the recording metadata.
+	Header Header
+
+	// EventStream contains all the events that were generated during
+	// the recording.
 	EventStream []*Event
 }
