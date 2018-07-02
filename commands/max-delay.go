@@ -6,7 +6,7 @@ import (
 
 var MaxDelay = cli.Command{
 	Name:   "max-delay",
-	Usage:  "cuts all delays between commands up to a maximum value",
+	Usage:  "Cuts all delays between commands down to a given value",
 	Action: maxDelayAction,
 }
 
