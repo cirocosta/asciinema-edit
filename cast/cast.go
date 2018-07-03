@@ -14,6 +14,7 @@
 package cast
 
 import (
+	"encoding/json"
 	"io"
 
 	"github.com/pkg/errors"
@@ -211,6 +212,9 @@ func Validate(cast *Cast) (isValid bool, err error) {
 }
 
 // Encode writes the encoding of `Cast` into the writer passed as an argument.
+//
+// ps.: this method **will not** validate whether the cast is a valid V2
+// cast or not. Make sure you call `Validate` before.
 func Encode(writer io.Writer, cast *Cast) (err error) {
 	if writer == nil {
 		err = errors.Errorf("a writer must be specified")
@@ -220,6 +224,25 @@ func Encode(writer io.Writer, cast *Cast) (err error) {
 	if cast == nil {
 		err = errors.Errorf("a cast must be specified")
 		return
+	}
+
+	encoder := json.NewEncoder(writer)
+	encoder.SetIndent("", "")
+
+	err = encoder.Encode(&cast.Header)
+	if err != nil {
+		err = errors.Wrapf(err,
+			"failed to encode header")
+		return
+	}
+
+	for _, ev := range cast.EventStream {
+		err = encoder.Encode([]interface{}{ev.Time, ev.Type, ev.Data})
+		if err != nil {
+			err = errors.Wrapf(err,
+				"failed to encode event")
+			return
+		}
 	}
 
 	return

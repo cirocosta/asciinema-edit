@@ -1,6 +1,7 @@
 package cast_test
 
 import (
+	"bufio"
 	"bytes"
 	"github.com/cirocosta/asciinema-edit/cast"
 
@@ -274,6 +275,68 @@ var _ = Describe("Cast", func() {
 			It("fails", func() {
 				err := cast.Encode(&buf, nil)
 				Expect(err).NotTo(Succeed())
+			})
+		})
+
+		Context("with cast", func() {
+			var (
+				buf     bytes.Buffer
+				err     error
+				scanner *bufio.Scanner
+				data    = cast.Cast{
+					Header: cast.Header{
+						Version: 2,
+						Width:   10,
+						Height:  10,
+					},
+					EventStream: []*cast.Event{
+						&cast.Event{
+							Time: 1,
+							Type: "o",
+							Data: "foo",
+						},
+					},
+				}
+			)
+
+			JustBeforeEach(func() {
+				buf.Reset()
+				scanner = bufio.NewScanner(&buf)
+				err = cast.Encode(&buf, &data)
+			})
+
+			It("doesnt error", func() {
+				Expect(err).To(Succeed())
+			})
+
+			It("has the header in the first line", func() {
+				ok := scanner.Scan()
+				Expect(ok).To(BeTrue())
+
+				Expect(scanner.Text()).To(Equal(
+					`{"version":2,"width":10,"height":10,"theme":{},"env":{}}`))
+			})
+
+			It("has the first event in the second line", func() {
+				ok := scanner.Scan()
+				Expect(ok).To(BeTrue())
+
+				ok = scanner.Scan()
+				Expect(ok).To(BeTrue())
+
+				Expect(scanner.Text()).To(Equal(
+					`[1,"o","foo"]`))
+			})
+
+			It("doesn't have more than 2 lines", func() {
+				ok := scanner.Scan()
+				Expect(ok).To(BeTrue())
+
+				ok = scanner.Scan()
+				Expect(ok).To(BeTrue())
+
+				ok = scanner.Scan()
+				Expect(ok).NotTo(BeTrue())
 			})
 		})
 	})
