@@ -14,6 +14,9 @@ var (
 		Width:   123,
 		Height:  123,
 	}
+	invalidHeader = cast.Header{
+		Version: 123,
+	}
 	validEvent1 = cast.Event{
 		Time: 1,
 		Type: "o",
@@ -44,6 +47,46 @@ var _ = Describe("Cast", func() {
 
 				Expect(err).NotTo(Succeed())
 				Expect(isValid).NotTo(BeTrue())
+			})
+		})
+
+		Context("w/ cast containing invalid header", func() {
+			It("fails", func() {
+				isValid, err := cast.Validate(&cast.Cast{
+					Header: invalidHeader,
+				})
+
+				Expect(err).NotTo(Succeed())
+				Expect(isValid).NotTo(BeTrue())
+			})
+		})
+
+		Context("w/ cast containing invalid event stream", func() {
+			It("fails", func() {
+				isValid, err := cast.Validate(&cast.Cast{
+					Header: validHeader,
+					EventStream: []*cast.Event{
+						&invalidEvent4,
+					},
+				})
+
+				Expect(err).NotTo(Succeed())
+				Expect(isValid).NotTo(BeTrue())
+			})
+		})
+
+		Context("w/ wellformed cast", func() {
+			It("succeeds", func() {
+				isValid, err := cast.Validate(&cast.Cast{
+					Header: validHeader,
+					EventStream: []*cast.Event{
+						&validEvent1,
+						&validEvent2,
+					},
+				})
+
+				Expect(err).To(Succeed())
+				Expect(isValid).To(BeTrue())
 			})
 		})
 
