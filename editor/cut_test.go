@@ -9,21 +9,31 @@ import (
 )
 
 var _ = Describe("Cut", func() {
-	Context("with nil cast", func() {
-		It("fails", func() {
-			err := editor.Cut(nil, 1, 2)
-			Expect(err).ToNot(Succeed())
-		})
-	})
-
-	Context("with an empty event stream", func() {
+	Describe("parameter validation", func() {
 		var data = &cast.Cast{
 			EventStream: []*cast.Event{},
 		}
 
-		It("errors", func() {
-			err := editor.Cut(data, 1, 2)
-			Expect(err).ToNot(Succeed())
+		Context("with nil cast", func() {
+			It("fails", func() {
+				err := editor.Cut(nil, 1, 2)
+				Expect(err).ToNot(Succeed())
+			})
+		})
+
+		Context("with an empty event stream", func() {
+
+			It("errors", func() {
+				err := editor.Cut(data, 1, 2)
+				Expect(err).ToNot(Succeed())
+			})
+		})
+
+		Context("with `from` > `to`", func() {
+			It("fails", func() {
+				err := editor.Cut(data, 3, 2)
+				Expect(err).ToNot(Succeed())
+			})
 		})
 	})
 
@@ -63,11 +73,6 @@ var _ = Describe("Cut", func() {
 			}
 
 			initialNumberOfEvents = len(data.EventStream)
-		})
-
-		It("fails if `from` > `to`", func() {
-			err = editor.Cut(data, 3, 2)
-			Expect(err).ToNot(Succeed())
 		})
 
 		Context("cutting a single frame when `from` == `to`", func() {
