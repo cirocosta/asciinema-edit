@@ -1,6 +1,8 @@
 package editor
 
 import (
+	"math"
+
 	"github.com/cirocosta/asciinema-edit/cast"
 	"github.com/pkg/errors"
 )
@@ -62,6 +64,14 @@ func Cut(c *cast.Cast, from, to float64) (err error) {
 	if toIdx == -1 {
 		err = errors.Errorf("couldn't find final frame")
 		return
+	}
+
+	if toIdx+1 < len(c.EventStream) {
+		delta := c.EventStream[toIdx+1].Time - c.EventStream[fromIdx].Time
+		for _, remainingElem := range c.EventStream[toIdx+1:] {
+			remainingElem.Time -= delta
+			remainingElem.Time = math.Round(remainingElem.Time*1000) / 1000
+		}
 	}
 
 	c.EventStream = append(
