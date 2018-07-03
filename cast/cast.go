@@ -14,6 +14,8 @@
 package cast
 
 import (
+	"bufio"
+	"bytes"
 	"encoding/json"
 	"io"
 
@@ -105,13 +107,6 @@ type Cast struct {
 	// EventStream contains all the events that were generated during
 	// the recording.
 	EventStream []*Event
-}
-
-// Decode reads the whole contents of the reader passed as argument, validates
-// whether the stream contains a valid asciinema cast and then unmarshals it
-// into a cast struct.
-func Decode(r io.Reader) (cast *Cast, err error) {
-	return
 }
 
 // ValidateHeader verifies whether the provided `cast` header structure is valid
@@ -243,6 +238,91 @@ func Encode(writer io.Writer, cast *Cast) (err error) {
 				"failed to encode event")
 			return
 		}
+	}
+
+	return
+}
+
+// Decode reads the whole contents of the reader passed as argument, validates
+// whether the stream contains a valid asciinema cast and then unmarshals it
+// into a cast struct.
+func Decode(reader io.Reader) (cast *Cast, err error) {
+	if reader == nil {
+		err = errors.Errorf("reader must not be nil")
+		return
+	}
+
+	var (
+		scanner = bufio.NewScanner(reader)
+		decoder *json.Decoder
+		ok      bool
+	)
+
+	cast = new(Cast)
+	ok = scanner.Scan()
+	if !ok {
+		err = errors.Errorf("empty reader")
+		return
+	}
+
+	decoder = json.NewDecoder(bytes.NewReader(scanner.Bytes()))
+	decoder.DisallowUnknownFields()
+
+	err = decoder.Decode(&cast.Header)
+	if err != nil {
+		err = errors.Wrapf(err,
+			"couldn't decode header")
+		return
+	}
+
+	cast.EventStream = make([]*Event, 0)
+	for {
+		var (
+			ev     = new([3]interface{})
+			time   float64
+			data   string
+			evType string
+			ok     bool
+		)
+
+		ok = scanner.Scan()
+		if !ok {
+			return
+		}
+
+		decoder = json.NewDecoder(bytes.NewReader(scanner.Bytes()))
+		decoder.DisallowUnknownFields()
+
+		err = decoder.Decode(ev)
+		if err != nil {
+			err = errors.Wrapf(err,
+				"failed to parse ev line")
+			return
+		}
+
+		time, ok = ev[0].(float64)
+		if !ok {
+			err = errors.Errorf("first element of event is not a float64")
+			return
+		}
+
+		evType, ok = ev[1].(string)
+		if !ok {
+			err = errors.Errorf("second element of event is not a string")
+			return
+		}
+
+		data, ok = ev[2].(string)
+		if !ok {
+			err = errors.Errorf("third element of event is not a string")
+			return
+		}
+
+		cast.EventStream = append(cast.EventStream, &Event{
+			Time: time,
+			Type: evType,
+			Data: data,
+		})
 	}
 
 	return

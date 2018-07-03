@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"github.com/cirocosta/asciinema-edit/cast"
+	"io"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -337,6 +338,74 @@ var _ = Describe("Cast", func() {
 
 				ok = scanner.Scan()
 				Expect(ok).NotTo(BeTrue())
+			})
+		})
+	})
+
+	Describe("Decode", func() {
+		Context("with nil reader", func() {
+			It("fails", func() {
+				_, err := cast.Decode(nil)
+				Expect(err).ToNot(Succeed())
+			})
+		})
+
+		Context("with empty reader", func() {
+			It("fails", func() {
+				reader := bytes.NewBufferString("")
+				_, err := cast.Decode(reader)
+				Expect(err).ToNot(Succeed())
+			})
+		})
+
+		Context("with non-empty reader", func() {
+			It("fails if not json supplied", func() {
+				reader := bytes.NewBufferString("something else")
+				_, err := cast.Decode(reader)
+				Expect(err).ToNot(Succeed())
+			})
+
+			It("fails if json not decodeable to a header struct", func() {
+				reader := bytes.NewBufferString(`{"foo": "bar"}`)
+				_, err := cast.Decode(reader)
+				Expect(err).ToNot(Succeed())
+
+				reader = bytes.NewBufferString(`[1,2,3]`)
+				_, err = cast.Decode(reader)
+				Expect(err).ToNot(Succeed())
+			})
+
+			Context("w/ proper stream", func() {
+				var (
+					reader      io.Reader
+					decodedCast *cast.Cast
+					err         error
+				)
+
+				BeforeEach(func() {
+					reader = bytes.NewBufferString(`{"version": 2, "width":123}
+[1,"o", "lol"]
+[2,"o", "lol"]`)
+					decodedCast, err = cast.Decode(reader)
+				})
+
+				It("succeeds", func() {
+					Expect(err).To(Succeed())
+					Expect(decodedCast).ToNot(BeNil())
+				})
+
+				It("has header values set", func() {
+					Expect(decodedCast.Header.Version).
+						To(Equal(uint8(2)))
+					Expect(decodedCast.Header.Width).
+						To(Equal(uint(123)))
+					Expect(decodedCast.Header.Height).
+						To(Equal(uint(0)))
+				})
+
+				It("captures the events", func() {
+					Expect(len(decodedCast.EventStream)).To(Equal(2))
+				})
 			})
 		})
 	})
