@@ -9,6 +9,48 @@ import (
 )
 
 var _ = Describe("Cast", func() {
+	Describe("ValidateEvent", func() {
+		Context("regarding type", func() {
+			It("fails if not specified", func() {
+				isValid, err := cast.ValidateEvent(&cast.Event{
+					Type: "",
+				})
+
+				Expect(err).NotTo(Succeed())
+				Expect(isValid).NotTo(BeTrue())
+			})
+
+			It("fails if not `i` or `o`", func() {
+				isValid, err := cast.ValidateEvent(&cast.Event{
+					Type: "abc",
+				})
+
+				Expect(err).NotTo(Succeed())
+				Expect(isValid).NotTo(BeTrue())
+			})
+		})
+
+		It("succeeds if well specified", func() {
+			isValid, err := cast.ValidateEvent(&cast.Event{
+				Time: 123,
+				Type: "o",
+				Data: "lol",
+			})
+
+			Expect(err).To(Succeed())
+			Expect(isValid).To(BeTrue())
+
+			isValid, err = cast.ValidateEvent(&cast.Event{
+				Time: 321,
+				Type: "i",
+				Data: "lol",
+			})
+
+			Expect(err).To(Succeed())
+			Expect(isValid).To(BeTrue())
+		})
+	})
+
 	Describe("ValidateHeader", func() {
 		It("fails if version is not 2", func() {
 			isValid, err := cast.ValidateHeader(&cast.Header{
@@ -38,6 +80,17 @@ var _ = Describe("Cast", func() {
 
 			Expect(err).NotTo(Succeed())
 			Expect(isValid).NotTo(BeTrue())
+		})
+
+		It("succeeds if well specified", func() {
+			isValid, err := cast.ValidateHeader(&cast.Header{
+				Version: 2,
+				Width:   123,
+				Height:  321,
+			})
+
+			Expect(err).To(Succeed())
+			Expect(isValid).To(BeTrue())
 		})
 	})
 

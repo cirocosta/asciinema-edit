@@ -137,6 +137,12 @@ func ValidateHeader(header *Header) (isValid bool, err error) {
 
 // ValidateEvent checks whether the provided `Event` is properly formed.
 func ValidateEvent(event *Event) (isValid bool, err error) {
+	if event.Type != "i" && event.Type != "o" {
+		err = errors.Errorf("type must either be `o` or `i`")
+		return
+	}
+
+	isValid = true
 	return
 }
 
