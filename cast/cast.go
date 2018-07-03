@@ -116,6 +116,11 @@ func Decode(r io.Reader) (cast *Cast, err error) {
 // ValidateHeader verifies whether the provided `cast` header structure is valid
 // or not based on the asciinema cast v2 protocol.
 func ValidateHeader(header *Header) (isValid bool, err error) {
+	if header == nil {
+		err = errors.Errorf("header must not be nil")
+		return
+	}
+
 	if header.Version != 2 {
 		err = errors.Errorf("only casts with version 2 are valid")
 		return
@@ -137,12 +142,22 @@ func ValidateHeader(header *Header) (isValid bool, err error) {
 
 // ValidateEvent checks whether the provided `Event` is properly formed.
 func ValidateEvent(event *Event) (isValid bool, err error) {
+	if event == nil {
+		err = errors.Errorf("event must not be nil")
+		return
+	}
+
 	if event.Type != "i" && event.Type != "o" {
 		err = errors.Errorf("type must either be `o` or `i`")
 		return
 	}
 
 	isValid = true
+	return
+}
+
+// Validate makes sure that the supplied cast is valid.
+func Validate(cast *Cast) (isValid bool, err error) {
 	return
 }
 

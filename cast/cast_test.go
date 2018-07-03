@@ -10,6 +10,13 @@ import (
 
 var _ = Describe("Cast", func() {
 	Describe("ValidateEvent", func() {
+		It("fails if event is nil", func() {
+			isValid, err := cast.ValidateEvent(nil)
+
+			Expect(err).NotTo(Succeed())
+			Expect(isValid).NotTo(BeTrue())
+		})
+
 		Context("regarding type", func() {
 			It("fails if not specified", func() {
 				isValid, err := cast.ValidateEvent(&cast.Event{
@@ -52,6 +59,13 @@ var _ = Describe("Cast", func() {
 	})
 
 	Describe("ValidateHeader", func() {
+		It("fails if header is nil", func() {
+			isValid, err := cast.ValidateHeader(nil)
+
+			Expect(err).NotTo(Succeed())
+			Expect(isValid).NotTo(BeTrue())
+		})
+
 		It("fails if version is not 2", func() {
 			isValid, err := cast.ValidateHeader(&cast.Header{
 				Version: 123,
