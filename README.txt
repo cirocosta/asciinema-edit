@@ -14,7 +14,8 @@ INSTALL
 
    Retrieving from GitHub releases
 
-     curl -SOL ...
+     VERSION=0.0.1
+     curl -SOL https://github.com/cirocosta/asciinema-edit/releases/download/$VERSION/asciinema-edit_$VERSION_linux_amd64.tar.gz
 
 USAGE:
    asciinema-edit [global options] command [command options] [arguments...]
