@@ -14,8 +14,6 @@
 package cast
 
 import (
-	"bufio"
-	"bytes"
 	"encoding/json"
 	"io"
 
@@ -253,19 +251,12 @@ func Decode(reader io.Reader) (cast *Cast, err error) {
 	}
 
 	var (
-		scanner = bufio.NewScanner(reader)
 		decoder *json.Decoder
-		ok      bool
 	)
 
 	cast = new(Cast)
-	ok = scanner.Scan()
-	if !ok {
-		err = errors.Errorf("empty reader")
-		return
-	}
 
-	decoder = json.NewDecoder(bytes.NewReader(scanner.Bytes()))
+	decoder = json.NewDecoder(reader)
 	decoder.DisallowUnknownFields()
 
 	err = decoder.Decode(&cast.Header)
@@ -285,16 +276,13 @@ func Decode(reader io.Reader) (cast *Cast, err error) {
 			ok     bool
 		)
 
-		ok = scanner.Scan()
-		if !ok {
-			return
-		}
-
-		decoder = json.NewDecoder(bytes.NewReader(scanner.Bytes()))
-		decoder.DisallowUnknownFields()
-
 		err = decoder.Decode(ev)
 		if err != nil {
+			if err == io.EOF {
+				err = nil
+				return
+			}
+
 			err = errors.Wrapf(err,
 				"failed to parse ev line")
 			return
