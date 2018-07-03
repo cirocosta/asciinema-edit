@@ -12,7 +12,7 @@ var Cut = cli.Command{
 	Name: "cut",
 	Usage: `Removes a certain range of time frames.
 
-   If no file name is specified as a positional argument a cast is
+   If no file name is specified as a positional argument, a cast is
    expected to be served via stdin.
 
    Once the transformation has been performed, the resulting cast is

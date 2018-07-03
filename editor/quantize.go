@@ -19,4 +19,3 @@ package editor
 // 3. if it fits, reduce the delay to the maximum allowed (floor of
 //    the quantization range).
 // 4. adjust the rest of the event stream.
-
