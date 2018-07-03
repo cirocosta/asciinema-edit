@@ -37,6 +37,18 @@ var (
 )
 
 var _ = Describe("Cast", func() {
+	Describe("Validate", func() {
+		Context("with a nil cast", func() {
+			It("fails", func() {
+				isValid, err := cast.Validate(nil)
+
+				Expect(err).NotTo(Succeed())
+				Expect(isValid).NotTo(BeTrue())
+			})
+		})
+
+	})
+
 	Describe("ValidateEvent", func() {
 		Context("with nil event", func() {
 			It("fails", func() {
@@ -140,94 +152,69 @@ var _ = Describe("Cast", func() {
 		})
 	})
 
-	Describe("Validate", func() {
-		Context("with a nil cast", func() {
-			It("fails", func() {
-				isValid, err := cast.Validate(nil)
-
-				Expect(err).NotTo(Succeed())
-				Expect(isValid).NotTo(BeTrue())
-			})
-		})
-
-		Context("with invalid header", func() {
+	Describe("ValidateEventStream", func() {
+		Context("with empty stream", func() {
 			var data = cast.Cast{
-				Header: cast.Header{
-					Version: 123,
-				},
+				Header:      validHeader,
+				EventStream: []*cast.Event{},
 			}
 
-			It("fails", func() {
-				isValid, err := cast.Validate(&data)
-
-				Expect(err).NotTo(Succeed())
-				Expect(isValid).NotTo(BeTrue())
-			})
-		})
-
-		Context("regarding events", func() {
-			Context("having an empty list of them", func() {
-				var data = cast.Cast{
-					Header:      validHeader,
-					EventStream: []*cast.Event{},
-				}
-
-				It("is valid", func() {
-					isValid, err := cast.Validate(&data)
-
-					Expect(err).To(Succeed())
-					Expect(isValid).To(BeTrue())
-				})
-			})
-
-			It("fails if not sorted by time", func() {
-				var data = cast.Cast{
-					Header: validHeader,
-					EventStream: []*cast.Event{
-						&validEvent2,
-						&validEvent1,
-						&validEvent3,
-					},
-				}
-
-				isValid, err := cast.Validate(&data)
-
-				Expect(err).NotTo(Succeed())
-				Expect(isValid).NotTo(BeTrue())
-
-			})
-
-			It("succeeds if sorted and valid", func() {
-				var data = cast.Cast{
-					Header: validHeader,
-					EventStream: []*cast.Event{
-						&validEvent1,
-						&validEvent2,
-						&validEvent3,
-					},
-				}
-
+			It("is valid", func() {
 				isValid, err := cast.Validate(&data)
 
 				Expect(err).To(Succeed())
 				Expect(isValid).To(BeTrue())
 			})
-
-			It("fails if there's an invalid event", func() {
-				var data = cast.Cast{
-					Header: validHeader,
-					EventStream: []*cast.Event{
-						&validEvent1,
-						&invalidEvent4,
-					},
-				}
-
-				isValid, err := cast.Validate(&data)
-
-				Expect(err).NotTo(Succeed())
-				Expect(isValid).NotTo(BeTrue())
-			})
 		})
+
+		It("fails if not sorted by time", func() {
+			var data = cast.Cast{
+				Header: validHeader,
+				EventStream: []*cast.Event{
+					&validEvent2,
+					&validEvent1,
+					&validEvent3,
+				},
+			}
+
+			isValid, err := cast.Validate(&data)
+
+			Expect(err).NotTo(Succeed())
+			Expect(isValid).NotTo(BeTrue())
+
+		})
+
+		It("succeeds if sorted and valid", func() {
+			var data = cast.Cast{
+				Header: validHeader,
+				EventStream: []*cast.Event{
+					&validEvent1,
+					&validEvent2,
+					&validEvent3,
+				},
+			}
+
+			isValid, err := cast.Validate(&data)
+
+			Expect(err).To(Succeed())
+			Expect(isValid).To(BeTrue())
+		})
+
+		It("fails if there's an invalid event", func() {
+			var data = cast.Cast{
+				Header: validHeader,
+				EventStream: []*cast.Event{
+					&validEvent1,
+					&invalidEvent4,
+				},
+			}
+
+			isValid, err := cast.Validate(&data)
+
+			Expect(err).NotTo(Succeed())
+			Expect(isValid).NotTo(BeTrue())
+		})
+
 	})
 
 	Describe("Encode", func() {

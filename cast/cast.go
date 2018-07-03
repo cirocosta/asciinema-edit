@@ -156,6 +156,37 @@ func ValidateEvent(event *Event) (isValid bool, err error) {
 	return
 }
 
+// ValidateEventStream makes sure that a given set of events (event stream)
+// is valid.
+//
+// A valid stream must:
+// - be ordered by time; and
+// - have valid events.
+func ValidateEventStream(eventStream []*Event) (isValid bool, err error) {
+	var (
+		lastTime float64
+		ev       *Event
+	)
+
+	for _, ev = range eventStream {
+		if ev.Time < lastTime {
+			err = errors.Errorf("events must be ordered by time")
+			return
+		}
+
+		_, err = ValidateEvent(ev)
+		if err != nil {
+			err = errors.Wrapf(err, "invalid event")
+			return
+		}
+
+		lastTime = ev.Time
+	}
+
+	isValid = true
+	return
+}
+
 // Validate makes sure that the supplied cast is valid.
 func Validate(cast *Cast) (isValid bool, err error) {
 	if cast == nil {
@@ -169,20 +200,10 @@ func Validate(cast *Cast) (isValid bool, err error) {
 		return
 	}
 
-	var lastTime float64
-	for _, ev := range cast.EventStream {
-		if ev.Time < lastTime {
-			err = errors.Errorf("events must be ordered by time")
-			return
-		}
-
-		_, err = ValidateEvent(ev)
-		if err != nil {
-			err = errors.Wrapf(err, "invalid event")
-			return
-		}
-
-		lastTime = ev.Time
+	_, err = ValidateEventStream(cast.EventStream)
+	if err != nil {
+		err = errors.Wrapf(err, "invalid event stream")
+		return
 	}
 
 	isValid = true
