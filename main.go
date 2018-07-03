@@ -9,12 +9,13 @@ import (
 
 var (
 	version = "dev"
+	commit = "HEAD"
 )
 
 func main() {
 	app := cli.NewApp()
 
-	app.Version = version
+	app.Version = version + " - " + commit
 	app.Usage = "edit recorded asciinema casts"
 	app.Description = `asciinema-edit provides missing features from the "asciinema" tool
    when it comes to editing a cast that has already been recorded.`
