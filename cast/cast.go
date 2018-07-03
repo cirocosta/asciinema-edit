@@ -14,9 +14,9 @@
 package cast
 
 import (
-	"bufio"
-	"encoding/json"
 	"io"
+
+	"github.com/pkg/errors"
 )
 
 // Header represents the asciicast header - a JSON-encoded object containing
@@ -103,7 +103,7 @@ type Cast struct {
 
 	// EventStream contains all the events that were generated during
 	// the recording.
-	EventStream []*Event
+	EventStream []Event
 }
 
 // Decode reads the whole contents of the reader passed as argument, validates
@@ -113,7 +113,44 @@ func Decode(r io.Reader) (cast *Cast, err error) {
 	return
 }
 
+// ValidateHeader verifies whether the provided `cast` header structure is valid
+// or not based on the asciinema cast v2 protocol.
+func ValidateHeader(header *Header) (isValid bool, err error) {
+	if header.Version != 2 {
+		err = errors.Errorf("only casts with version 2 are valid")
+		return
+	}
+
+	if header.Width == 0 {
+		err = errors.Errorf("a valid width (>0) must be specified")
+		return
+	}
+
+	if header.Height == 0 {
+		err = errors.Errorf("a valid height (>0) must be specified")
+		return
+	}
+
+	isValid = true
+	return
+}
+
+// ValidateEvent checks whether the provided `Event` is properly formed.
+func ValidateEvent(event *Event) (isValid bool, err error) {
+	return
+}
+
 // Encode writes the encoding of `Cast` into the writer passed as an argument.
-func Encode(w io.Writer, cast *Cast) (err error) {
+func Encode(writer io.Writer, cast *Cast) (err error) {
+	if writer == nil {
+		err = errors.Errorf("a writer must be specified")
+		return
+	}
+
+	if cast == nil {
+		err = errors.Errorf("a cast must be specified")
+		return
+	}
+
 	return
 }

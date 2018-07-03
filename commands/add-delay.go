@@ -2,6 +2,8 @@ package commands
 
 import (
 	"gopkg.in/urfave/cli.v1"
+
+	_ "github.com/cirocosta/asciinema-edit/cast"
 )
 
 var AddDelay = cli.Command{
