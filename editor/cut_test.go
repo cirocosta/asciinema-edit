@@ -48,8 +48,9 @@ var _ = Describe("Cut", func() {
 
 	Context("with non-empty event stream", func() {
 		var (
-			err  error
-			data *cast.Cast
+			err                   error
+			data                  *cast.Cast
+			initialNumberOfEvents int
 		)
 
 		BeforeEach(func() {
@@ -61,11 +62,37 @@ var _ = Describe("Cut", func() {
 					event2,
 				},
 			}
+
+			initialNumberOfEvents = len(data.EventStream)
 		})
 
 		It("fails if `from` > `to`", func() {
 			err = editor.Cut(data, 3, 2)
 			Expect(err).ToNot(Succeed())
+		})
+
+		It("cuts single frame if `from` == `to`", func() {
+			err = editor.Cut(data, 1.2, 1.2)
+			Expect(err).To(Succeed())
+
+			Expect(data.EventStream).To(ContainElement(event1))
+			Expect(data.EventStream).ToNot(ContainElement(event1_2))
+			Expect(data.EventStream).To(ContainElement(event1_6))
+			Expect(data.EventStream).To(ContainElement(event2))
+
+			Expect(len(data.EventStream)).To(Equal(initialNumberOfEvents - 1))
+		})
+
+		It("cuts frames in range", func() {
+			err = editor.Cut(data, 1.2, 2)
+			Expect(err).To(Succeed())
+
+			Expect(data.EventStream).To(ContainElement(event1))
+			Expect(data.EventStream).ToNot(ContainElement(event1_2))
+			Expect(data.EventStream).ToNot(ContainElement(event1_6))
+			Expect(data.EventStream).ToNot(ContainElement(event2))
+
+			Expect(len(data.EventStream)).To(Equal(initialNumberOfEvents - 3))
 		})
 	})
 })
