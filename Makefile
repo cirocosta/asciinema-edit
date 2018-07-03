@@ -5,4 +5,4 @@ fmt:
 	go fmt ./...
 
 test:
-	go test ./cast
+	go test ./cast -v

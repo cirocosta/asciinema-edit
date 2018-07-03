@@ -103,7 +103,7 @@ type Cast struct {
 
 	// EventStream contains all the events that were generated during
 	// the recording.
-	EventStream []Event
+	EventStream []*Event
 }
 
 // Decode reads the whole contents of the reader passed as argument, validates
@@ -158,6 +158,34 @@ func ValidateEvent(event *Event) (isValid bool, err error) {
 
 // Validate makes sure that the supplied cast is valid.
 func Validate(cast *Cast) (isValid bool, err error) {
+	if cast == nil {
+		err = errors.Errorf("cast must not be nil")
+		return
+	}
+
+	_, err = ValidateHeader(&cast.Header)
+	if err != nil {
+		err = errors.Wrapf(err, "invalid header")
+		return
+	}
+
+	var lastTime float64
+	for _, ev := range cast.EventStream {
+		if ev.Time < lastTime {
+			err = errors.Errorf("events must be ordered by time")
+			return
+		}
+
+		_, err = ValidateEvent(ev)
+		if err != nil {
+			err = errors.Wrapf(err, "invalid event")
+			return
+		}
+
+		lastTime = ev.Time
+	}
+
+	isValid = true
 	return
 }
 
