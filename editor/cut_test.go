@@ -75,6 +75,20 @@ var _ = Describe("Cut", func() {
 			initialNumberOfEvents = len(data.EventStream)
 		})
 
+		Context("with `from` not found", func() {
+			It("fails", func() {
+				err = editor.Cut(data, 1.1, 2)
+				Expect(err).ToNot(Succeed())
+			})
+		})
+
+		Context("with `to` not found", func() {
+			It("fails", func() {
+				err = editor.Cut(data, 2, 3.3)
+				Expect(err).ToNot(Succeed())
+			})
+		})
+
 		Context("cutting a single frame when `from` == `to`", func() {
 			JustBeforeEach(func() {
 				err = editor.Cut(data, 1.2, 1.2)

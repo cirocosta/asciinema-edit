@@ -99,9 +99,67 @@ var _ = Describe("Speed", func() {
 			}
 		})
 
-		Context("with a slowing down factor and range", func() {
+		Context("with `from` not found", func() {
+			It("fails", func() {
+				err = editor.Speed(data, 2, 1.3, 2)
+				Expect(err).ToNot(Succeed())
+			})
+		})
+
+		Context("with `to` not found", func() {
+			It("fails", func() {
+				err = editor.Speed(data, 2, 2, 3.3)
+				Expect(err).ToNot(Succeed())
+			})
+		})
+
+		Context("with a slowing down factor", func() {
+			Context("in a small range", func() {
+				JustBeforeEach(func() {
+					err = editor.Speed(data, 3, 1, 2)
+				})
+
+				It("succeeds", func() {
+					Expect(err).To(Succeed())
+				})
+
+				It("properly updates the timestamps", func() {
+					Expect(event1.Time).To(Equal(float64(1)),
+						"first")
+					Expect(event2.Time).To(Equal(float64(4)),
+						"second")
+					Expect(event3.Time).To(Equal(float64(5)),
+						"third")
+					Expect(event4.Time).To(Equal(float64(6)),
+						"fourth")
+				})
+			})
+
+			Context("in the whole set", func() {
+				JustBeforeEach(func() {
+					err = editor.Speed(data, 3, 1, 4)
+				})
+
+				It("succeeds", func() {
+					Expect(err).To(Succeed())
+				})
+
+				It("properly updates the timestamps", func() {
+					Expect(event1.Time).To(Equal(float64(1)),
+						"first")
+					Expect(event2.Time).To(Equal(float64(4)),
+						"second")
+					Expect(event3.Time).To(Equal(float64(7)),
+						"third")
+					Expect(event4.Time).To(Equal(float64(10)),
+						"fourth")
+				})
+			})
+		})
+
+		Context("with a speeding up factor and a range", func() {
 			JustBeforeEach(func() {
-				err = editor.Speed(data, 2, 1, 2)
+				err = editor.Speed(data, 0.5, 1, 2)
 			})
 
 			It("succeeds", func() {
@@ -109,11 +167,14 @@ var _ = Describe("Speed", func() {
 			})
 
 			It("properly updates the timestamps", func() {
-				Skip("TODO")
-				Expect(event1.Time).To(Equal(float64(1)))
-				Expect(event2.Time).To(Equal(float64(4)))
-				Expect(event3.Time).To(Equal(float64(5)))
-				Expect(event4.Time).To(Equal(float64(6)))
+				Expect(event1.Time).To(Equal(float64(1)),
+					"first")
+				Expect(event2.Time).To(Equal(float64(1.5)),
+					"second")
+				Expect(event3.Time).To(Equal(float64(2.5)),
+					"third")
+				Expect(event4.Time).To(Equal(float64(3.5)),
+					"fourth")
 			})
 		})
 	})
