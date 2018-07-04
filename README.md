@@ -6,7 +6,9 @@
 
 `asciinema-edit` is a tool who's purpose is to post-process asciinema casts (V2), either from [asciinema](https://github.com/asciinema/asciinema) itself or [termtosvg](https://github.com/nbedos/termtosvg).
 
-![Illustration of how ASCIINEMA-EDIT works](/.github/asciinema-edit-overview.svg)
+<p align="center">
+  <img src="/.github/asciinema-edit-overview.svg" alt="Illustration of how ASCIINEMA-EDIT works" />
+</p>
 
 
 
