@@ -44,7 +44,7 @@ NAME:
       delta = 1.000000 | qdelta = 1.000000
 
    If no file name is specified as a positional argument, a cast is
-   expected to be serverd via stdin.
+   expected to be served via stdin.
 
    Once the transformation has been performed, the resulting cast is
    either written to a file specified in the '--out' flag or to stdout
@@ -81,7 +81,7 @@ NAME:
    asciinema-edit speed - Updates the cast speed by a certain factor.
 
    If no file name is specified as a positional argument, a cast is
-   expected to be serverd via stdin.
+   expected to be served via stdin.
 
    If no range is specified (start=0, end=0), the whole event stream
    is processed.
