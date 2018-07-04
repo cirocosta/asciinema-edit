@@ -33,10 +33,10 @@ EXAMPLES:
    Make only a certain part of the video twice as fast:
 
      asciinema-edit speed \
-	--factor 2 \
-	--start 12.231 \
-	--factor 45.333 \
-	./123.cast`,
+        --factor 2 \
+        --start 12.231 \
+        --factor 45.333 \
+        ./123.cast`,
 	ArgsUsage: "[filename]",
 	Action:    speedAction,
 	Flags: []cli.Flag{

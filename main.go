@@ -17,6 +17,12 @@ func main() {
 
 	app.Version = version + " - " + commit
 	app.Usage = "edit recorded asciinema casts"
+	app.Authors = []cli.Author{
+		cli.Author{
+			Name:  "Ciro da Silva da Costa",
+			Email: "ciro.costa@liferay.com",
+		},
+	}
 	app.Description = `asciinema-edit provides missing features from the "asciinema" tool
    when it comes to editing a cast that has already been recorded.`
 	app.Commands = []cli.Command{
