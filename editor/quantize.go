@@ -89,8 +89,8 @@ func Quantize(c *cast.Cast, ranges []QuantizeRange) (err error) {
 		deltas[i] = delta
 	}
 
-	for i = 1; i < len(c.EventStream); i++ {
-		c.EventStream[i].Time = c.EventStream[i-1].Time + deltas[i-1]
+	for i = 0; i < len(c.EventStream)-1; i++ {
+		c.EventStream[i+1].Time = c.EventStream[i].Time + deltas[i]
 	}
 
 	return
