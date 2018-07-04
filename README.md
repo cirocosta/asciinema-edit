@@ -22,6 +22,19 @@ Having those, you can improve your cast by:
 - reducing delays between commands; and
 - completely removing parts that don't add value to the cast.
 
+### Installation
+
+Being a Golang application, you can either build it yourself with `go get` or fetch a specific version from the [Releases page](https://github.com/cirocosta/asciinema-edit/releases):
+
+```sh
+#Using `go`, fetch the latest from `master`
+go get -u -v github.com/cirocosta/asciinema-edit
+
+#Retrieving from GitHub releases
+VERSION=0.0.3
+curl -SOL https://github.com/cirocosta/asciinema-edit/releases/download/$VERSION/asciinema-edit_$VERSION_linux_amd64.tar.gz
+```
+
 ### Quantize
 
 ```sh
@@ -161,16 +174,3 @@ OPTIONS:
    --out value    file to write the modified contents to
 ```
 
-
-### Installation
-
-Being a Golang application, you can either build it yourself with `go get` or fetch a specific version from the [Releases page](https://github.com/cirocosta/asciinema-edit/releases):
-
-```sh
-#Using `go`, fetch the latest from `master`
-go get -u -v github.com/cirocosta/asciinema-edit
-
-#Retrieving from GitHub releases
-VERSION=0.0.3
-curl -SOL https://github.com/cirocosta/asciinema-edit/releases/download/$VERSION/asciinema-edit_$VERSION_linux_amd64.tar.gz
-```
