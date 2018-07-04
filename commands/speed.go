@@ -69,33 +69,27 @@ func (t *SpeedTransformation) Transform(c *cast.Cast) (err error) {
 
 func speedAction(c *cli.Context) (err error) {
 	var (
-		input  = c.Args().First()
-		output = c.String("out")
+		input          = c.Args().First()
+		output         = c.String("out")
+		transformation = &SpeedTransformation{
+			factor: c.Float64("factor"),
+			from:   c.Float64("start"),
+			to:     c.Float64("end"),
+		}
 	)
-
-	transformation := &SpeedTransformation{
-		factor: c.Float64("factor"),
-		from:   c.Float64("start"),
-		to:     c.Float64("end"),
-	}
 
 	t, err := transformer.New(transformation, input, output)
 	if err != nil {
-		err = cli.NewExitError(
-			"failed to create transformation: " +
-				err.Error(), 1)
+		err = cli.NewExitError(err, 1)
 		return
 	}
 
-	err = t.Apply()
+	err = t.Transform()
 	if err != nil {
-		err = cli.NewExitError(
-			"failed to apply transformation: " +
-				err.Error(), 1)
+		err = cli.NewExitError(err, 1)
 		return
 	}
 
 	t.Close()
-
 	return
 }

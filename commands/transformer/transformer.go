@@ -14,8 +14,7 @@ type Transformation interface {
 type Transformer struct {
 	input          *os.File
 	output         *os.File
-	cast           *cast.Cast
-	Transformation Transformation
+	transformation Transformation
 }
 
 func New(t Transformation, input, output string) (m *Transformer, err error) {
@@ -27,7 +26,7 @@ func New(t Transformation, input, output string) (m *Transformer, err error) {
 	m = &Transformer{
 		input:          os.Stdin,
 		output:         os.Stdout,
-		Transformation: t,
+		transformation: t,
 	}
 
 	if input != "" {
@@ -66,8 +65,30 @@ func New(t Transformation, input, output string) (m *Transformer, err error) {
 	return
 }
 
-func (m *Transformer) Apply() (err error) {
-	err = m.Transformation.Transform(m.cast)
+func (m *Transformer) Transform() (err error) {
+	var decodedCast *cast.Cast
+
+	decodedCast, err = cast.Decode(m.input)
+	if err != nil {
+		err = errors.Wrapf(err,
+			"failed to decode cast from input")
+		return
+	}
+
+	err = m.transformation.Transform(decodedCast)
+	if err != nil {
+		err = errors.Wrapf(err,
+			"failed to transform cast")
+		return
+	}
+
+	err = cast.Encode(m.output, decodedCast)
+	if err != nil {
+		err = errors.Wrapf(err,
+			"failed to save modified cast")
+		return
+	}
+
 	return
 }
 
