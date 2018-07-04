@@ -1,3 +1,7 @@
+// Package transformer is an utility package designed to aid
+// the process of taking a cast from a given input, applying
+// a transformation to it and then outputting the transformed
+// cast to somewhere.
 package transformer
 
 import (
@@ -7,16 +11,39 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Transformation describes a generic operation that is meant
+// to mutate a single cast at a time.
 type Transformation interface {
+	// Transform performs a mutation (in-place) in a cast.
+	// note.: no concurrency mechanisms guarantee that this
+	// is safe to be used across multiple goroutines
 	Transform(c *cast.Cast) (err error)
 }
 
+// Transformer wraps the agents in a tranformation pipeline.
+// Once created (see `New`), whenever a transformation is meant
+// to be performed (see `Transform`), `Transformer` will read a
+// complete cast from `intput`, process it with the trasnformation
+// set and then output the resulting cast to `output`.
+//
+// We can illustrate the whole process like this:
+//
+//   input ==> transformation ==> output
+//
+// Note.: `input` will be consumed until EOF before the transformation
+// is applied.
 type Transformer struct {
 	input          *os.File
 	output         *os.File
 	transformation Transformation
 }
 
+// New instantiates a new Transformer instance.
+//
+// The parameters are:
+// - t: a Transformation interface implementor;
+// - input: name of a file to read a cast from; and
+// - output: name of a file to save the transformed cast to.
 func New(t Transformation, input, output string) (m *Transformer, err error) {
 	if t == nil {
 		err = errors.Errorf("a transformation must be specified")
@@ -65,6 +92,10 @@ func New(t Transformation, input, output string) (m *Transformer, err error) {
 	return
 }
 
+// Transform performs the central piece of the cast transformation process:
+// 1. decodes a cast from `input`; then
+// 2. applies the transformation in the cast that now lives in memory; then
+// 3. encodes the cast, saving it to `output`.
 func (m *Transformer) Transform() (err error) {
 	var decodedCast *cast.Cast
 
@@ -92,6 +123,7 @@ func (m *Transformer) Transform() (err error) {
 	return
 }
 
+// Close closes any open resources (input and output).
 func (m *Transformer) Close() (err error) {
 	if m.output != nil && m.output != os.Stdout {
 		m.output.Close()

@@ -69,13 +69,13 @@ func Speed(c *cast.Cast, factor, from, to float64) (err error) {
 		accumulatedDelta += (newDelta - delta)
 
 		deltas[k] = newDelta
-		k += 1
+		k++
 	}
 
 	k = 0
 	for i = fromIdx; i < toIdx; i++ {
 		c.EventStream[i+1].Time = c.EventStream[i].Time + deltas[k]
-		k += 1
+		k++
 	}
 
 	if toIdx+1 < len(c.EventStream) {
