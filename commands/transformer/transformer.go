@@ -66,6 +66,11 @@ func New(t Transformation, input, output string) (m *Transformer, err error) {
 	return
 }
 
+func (m *Transformer) Apply() (err error) {
+	err = m.Transformation.Transform(m.cast)
+	return
+}
+
 func (m *Transformer) Close() (err error) {
 	if m.output != nil && m.output != os.Stdout {
 		m.output.Close()
