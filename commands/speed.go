@@ -14,6 +14,9 @@ var Speed = cli.Command{
    If no file name is specified as a positional argument, a cast is
    expected to be serverd via stdin.
 
+   If no range is specified (start=0, end=0), the whole event stream
+   is processed.
+
    Once the transformation has been performed, the resulting cast is
    either written to a file specified in the '--out' flag or to stdout
    (default).
@@ -63,6 +66,11 @@ type SpeedTransformation struct {
 }
 
 func (t *SpeedTransformation) Transform(c *cast.Cast) (err error) {
+	if t.from == 0 && t.to == 0 {
+		t.from = c.EventStream[0].Time
+		t.to = c.EventStream[len(c.EventStream)-1].Time
+	}
+
 	err = editor.Speed(c, t.factor, t.from, t.to)
 	return
 }
