@@ -1,7 +1,13 @@
-asciinema-edit
---------------
+<h1 align="center">asciinema-edit 🎬 </h1>
 
-Auxiliary tools for dealing with [asciinema](https://asciinema.org/docs/getting-started) casts.
+<h5 align="center">Auxiliary tools for dealing with ASCIINEMA casts</h5>
+
+<br/>
+
+`asciinema-edit` is a tool who's purpose is to post-process asciinema casts (V2), either from [asciinema](https://github.com/asciinema/asciinema) itself or [termtosvg](https://github.com/nbedos/termtosvg).
+
+![Illustration of how ASCIINEMA-EDIT works](/.github/asciinema-edit-overview.svg)
+
 
 
 NAME:
