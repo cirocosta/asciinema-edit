@@ -291,7 +291,7 @@ var _ = Describe("Cast", func() {
 						Height:  10,
 					},
 					EventStream: []*cast.Event{
-						&cast.Event{
+						{
 							Time: 1,
 							Type: "o",
 							Data: "foo",

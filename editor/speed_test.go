@@ -15,7 +15,7 @@ var _ = Describe("Speed", func() {
 		BeforeEach(func() {
 			data = &cast.Cast{
 				EventStream: []*cast.Event{
-					&cast.Event{},
+					{},
 				},
 			}
 		})
