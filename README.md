@@ -16,6 +16,12 @@ Three transformations have been implemented so far:
 - [`cut`](#cut): Removes a certain range of time frames;
 - [`speed`](#speed): Updates the cast speed by a certain factor.
 
+Having those, you can improve your cast by:
+
+- speeding up parts that are not very important;
+- reducing delays between commands; and
+- completely removing parts that don't add value to the cast.
+
 ### Quantize
 
 ```sh
