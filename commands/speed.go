@@ -1,6 +1,7 @@
 package commands
 
 import (
+	_ "github.com/cirocosta/asciinema-edit/commands/transformer"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -15,7 +16,7 @@ var Speed = cli.Command{
    either written to a file specified in the '--out' flag or to stdout
    (default).
 
-EXAMPLES
+EXAMPLES:
    Make the whole cast ("123.cast") twice as fast:
 
      asciinema-edit speed --factor 2 ./123.cast
@@ -54,5 +55,11 @@ EXAMPLES
 }
 
 func speedAction(c *cli.Context) (err error) {
+	// open a in
+	// open a out
+	// parse the cast supplied
+	// apply a mutation to the cast
+	// write to out
+
 	return
 }

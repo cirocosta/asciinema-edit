@@ -19,7 +19,7 @@ var Cut = cli.Command{
    either written to a file specified in the '--out' flag or to stdout
    (default).
 
-EXAMPLES
+EXAMPLES:
    Remove frames from 12.2s to 16.3s from the cast passed in the commands
    stdin.
 
@@ -38,11 +38,11 @@ EXAMPLES
 	Flags: []cli.Flag{
 		cli.Float64Flag{
 			Name:  "start",
-			Usage: "initial frame timestamp",
+			Usage: "initial frame timestamp (required)",
 		},
 		cli.Float64Flag{
 			Name:  "end",
-			Usage: "final frame timestamp",
+			Usage: "final frame timestamp (required)",
 		},
 		cli.StringFlag{
 			Name:  "out",
