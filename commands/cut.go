@@ -1,9 +1,8 @@
 package commands
 
 import (
-	"os"
-
 	"github.com/cirocosta/asciinema-edit/cast"
+	"github.com/cirocosta/asciinema-edit/commands/transformer"
 	"github.com/cirocosta/asciinema-edit/editor"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -51,62 +50,38 @@ EXAMPLES:
 	},
 }
 
+type CutTransformation struct {
+	from float64
+	to   float64
+}
+
+func (t *CutTransformation) Transform(c *cast.Cast) (err error) {
+	err = editor.Cut(c, t.from, t.to)
+	return
+}
+
 func cutAction(c *cli.Context) (err error) {
 	var (
-		from     = c.Float64("start")
-		to       = c.Float64("end")
-		filename = c.Args().First()
-		out      = c.String("out")
-
-		inputFile  *os.File = os.Stdin
-		outputFile *os.File = os.Stdout
+		input          = c.Args().First()
+		output         = c.String("out")
+		transformation = &CutTransformation{
+			from: c.Float64("start"),
+			to:   c.Float64("end"),
+		}
 	)
 
-	if filename != "" {
-		inputFile, err = os.Open(filename)
-		if err != nil {
-			err = cli.NewExitError(
-				"failed to open file "+filename+
-					" - "+err.Error(), 1)
-			return
-		}
-		defer inputFile.Close()
-	}
-
-	if out != "" {
-		outputFile, err = os.Create(out)
-		if err != nil {
-			err = cli.NewExitError(
-				"failed to create and open output file "+out+
-					" - "+err.Error(), 1)
-			return
-		}
-		defer outputFile.Close()
-
-	}
-
-	decodedCast, err := cast.Decode(inputFile)
+	t, err := transformer.New(transformation, input, output)
 	if err != nil {
-		err = cli.NewExitError(
-			"failed to decode contents as asciinema cast (v2) - "+
-				err.Error(), 1)
+		err = cli.NewExitError(err, 1)
 		return
 	}
 
-	err = editor.Cut(decodedCast, from, to)
+	err = t.Transform()
 	if err != nil {
-		err = cli.NewExitError(
-			"failed to cut cast - "+err.Error(), 1)
+		err = cli.NewExitError(err, 1)
 		return
 	}
 
-	err = cast.Encode(outputFile, decodedCast)
-	if err != nil {
-		err = cli.NewExitError(
-			"failed to save modified cast to file "+out+
-				" - "+err.Error(), 1)
-		return
-	}
-
+	t.Close()
 	return
 }
