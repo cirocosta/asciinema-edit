@@ -15,12 +15,29 @@ var Quantize = cli.Command{
 	Name: "quantize",
 	Usage: `Updates the cast delays following quantization ranges.
 
-   If no file name is specified as a positional argument, a cast is
-   expected to be serverd via stdin.
-
    The command acts on the delays between the frames, reducing such
    timings to the lowest value defined in a given range that they
    lie in.
+
+   For instance, consider the following timestamps:
+
+      1  2  5  9 10 11
+
+   Assuming that we quantize over [2,6), we'd cut any delays between 2 and
+   6 seconds to 2 second:
+
+      1  2  4  6  7  8
+
+   This can be more easily visualized by looking at the delay quantization:
+
+      delta = 1.000000 | qdelta = 1.000000
+      delta = 3.000000 | qdelta = 2.000000
+      delta = 4.000000 | qdelta = 2.000000
+      delta = 1.000000 | qdelta = 1.000000
+      delta = 1.000000 | qdelta = 1.000000
+
+   If no file name is specified as a positional argument, a cast is
+   expected to be serverd via stdin.
 
    Once the transformation has been performed, the resulting cast is
    either written to a file specified in the '--out' flag or to stdout
