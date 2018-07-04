@@ -5,6 +5,45 @@ import (
 	"github.com/pkg/errors"
 )
 
+// QuantizeRange describes a quantization range.
+//
+// When applied to a quantization function, any values that lie in the
+// range are trimmed to `from`.
+type QuantizeRange struct {
+	// From indicates the start of the range
+	From float64
+	// To indicates the end of the range
+	To float64
+}
+
+// NewQuantizeRange creates a new quantize range performing some basic
+// validations:
+// - `from` < `to`
+func NewQuantizeRange(from, to float64) (q *QuantizeRange, err error) {
+	if from < to {
+		err = errors.Errorf("constraint not satisfied: from < to")
+		return
+	}
+
+	q = &QuantizeRange{
+		From: from,
+		To:   to,
+	}
+	return
+}
+
+// InRange verifies whether a given value lies within the quantization
+// range.
+func (q *QuantizeRange) InRange(value float64) bool {
+	return value >= q.From && value < q.To
+}
+
+// Overlaps verifies whether a given range (`another`) overlaps with
+// this range.
+func (q *QuantizeRange) RangeOverlaps(another QuantizeRange) bool {
+	return q.InRange(another.From) || q.InRange(another.To)
+}
+
 // Quantize constraints a set of inputs that lie in a range to a single
 // value that corresponds to the lower bound of such range.
 //
@@ -32,26 +71,6 @@ import (
 // 3. if it fits, reduce the delay to the maximum allowed (floor of
 //    the quantization range).
 // 4. adjust the rest of the event stream.
-
-type QuantizeRange struct {
-	From float64
-	To   float64
-}
-
-// InRange verifies whether a given value lies within the quantization
-// range.
-// TODO test
-func (q *QuantizeRange) InRange(value float64) (isInRange bool) {
-	return value >= q.From && value < q.To
-}
-
-// Overlaps verifies whether a given range (`another`) overlaps with
-// this range.
-// TODO test
-func (q *QuantizeRange) RangeOverlaps(another *QuantizeRange) (overlaps bool) {
-	return q.InRange(another.From) || q.InRange(another.To)
-}
-
 func Quantize(c *cast.Cast, ranges []QuantizeRange) (err error) {
 	if c == nil {
 		err = errors.Errorf("cast must not be nil")

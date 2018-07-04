@@ -55,6 +55,69 @@ var _ = Describe("Quantize", func() {
 		})
 	})
 
+	Describe("RangeOverlaps", func() {
+		var qRange *editor.QuantizeRange
+
+		BeforeEach(func() {
+			qRange = &editor.QuantizeRange{
+				From: 1,
+				To:   2,
+			}
+		})
+
+		It("doesnt overlap if no in another range", func() {
+			Expect(qRange.RangeOverlaps(editor.QuantizeRange{
+				From: 30,
+				To:   40,
+			})).ToNot(BeTrue())
+		})
+
+		It("overlaps if from in another range", func() {
+			Expect(qRange.RangeOverlaps(editor.QuantizeRange{
+				From: 1.5,
+				To:   3,
+			})).To(BeTrue())
+		})
+
+		It("overlaps if to in another range", func() {
+			Expect(qRange.RangeOverlaps(editor.QuantizeRange{
+				From: 0.9,
+				To:   1.5,
+			})).To(BeTrue())
+		})
+	})
+
+	Describe("InRange", func() {
+		var qRange *editor.QuantizeRange
+
+		BeforeEach(func() {
+			qRange = &editor.QuantizeRange{
+				From: 1,
+				To:   2,
+			}
+		})
+
+		It("in range if `from <= x < to`", func() {
+			Expect(qRange.InRange(1.5)).To(BeTrue())
+		})
+
+		It("in range if `x == from`", func() {
+			Expect(qRange.InRange(1)).To(BeTrue())
+		})
+
+		It("not in range if `x == to`", func() {
+			Expect(qRange.InRange(2)).ToNot(BeTrue())
+		})
+
+		It("not in range if `x > to`", func() {
+			Expect(qRange.InRange(2.1)).ToNot(BeTrue())
+		})
+
+		It("not in range if `x < from`", func() {
+			Expect(qRange.InRange(0.9)).ToNot(BeTrue())
+		})
+	})
+
 	Context("having ranges specified", func() {
 		var (
 			data                     *cast.Cast
