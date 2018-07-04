@@ -27,6 +27,7 @@ func main() {
    when it comes to editing a cast that has already been recorded.`
 	app.Commands = []cli.Command{
 		commands.Cut,
+		commands.Quantize,
 		commands.Speed,
 	}
 
