@@ -10,12 +10,20 @@ import (
 //
 // For instance, consider the following timestamps:
 //
-//	 1  2  5  9 10 11 12
+//	 1  2  5  9 10 11
 //
 // Assuming that we quantize over [2,6), we'd cut any delays between 2 and
 // 6 seconds to 2 second:
 //
-//	 1  2  4  6  7  8  9	(with times already adjusted)
+//	 1  2  4  6  7  8
+//
+// This can be more easily visualized by looking at the delay quantization:
+//
+//      delta = 1.000000 | qdelta = 1.000000
+//      delta = 3.000000 | qdelta = 2.000000
+//      delta = 4.000000 | qdelta = 2.000000
+//      delta = 1.000000 | qdelta = 1.000000
+//      delta = 1.000000 | qdelta = 1.000000
 //
 // The euristic is:
 //
@@ -26,8 +34,22 @@ import (
 // 4. adjust the rest of the event stream.
 
 type QuantizeRange struct {
-	from float64
-	to   float64
+	From float64
+	To   float64
+}
+
+// InRange verifies whether a given value lies within the quantization
+// range.
+// TODO test
+func (q *QuantizeRange) InRange(value float64) (isInRange bool) {
+	return value >= q.From && value < q.To
+}
+
+// Overlaps verifies whether a given range (`another`) overlaps with
+// this range.
+// TODO test
+func (q *QuantizeRange) RangeOverlaps(another *QuantizeRange) (overlaps bool) {
+	return q.InRange(another.From) || q.InRange(another.To)
 }
 
 func Quantize(c *cast.Cast, ranges []QuantizeRange) (err error) {
@@ -44,6 +66,31 @@ func Quantize(c *cast.Cast, ranges []QuantizeRange) (err error) {
 	if len(ranges) == 0 {
 		err = errors.Errorf("at least one quantization range must be specified")
 		return
+	}
+
+	var (
+		deltas = make([]float64, len(c.EventStream))
+		delta  float64
+		i      int
+	)
+
+	for i = 0; i < len(c.EventStream)-1; i++ {
+		delta = c.EventStream[i+1].Time - c.EventStream[i].Time
+
+		for _, qRange := range ranges {
+			if !qRange.InRange(delta) {
+				continue
+			}
+
+			delta = qRange.From
+			break
+		}
+
+		deltas[i] = delta
+	}
+
+	for i = 1; i < len(c.EventStream); i++ {
+		c.EventStream[i].Time = c.EventStream[i-1].Time + deltas[i-1]
 	}
 
 	return

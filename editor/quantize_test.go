@@ -54,4 +54,58 @@ var _ = Describe("Quantize", func() {
 			})
 		})
 	})
+
+	Context("having ranges specified", func() {
+		var (
+			data                     *cast.Cast
+			event1, event2, event5   *cast.Event
+			event9, event10, event11 *cast.Event
+			err                      error
+		)
+
+		BeforeEach(func() {
+			event1 = &cast.Event{Time: 1}
+			event2 = &cast.Event{Time: 2}
+			event5 = &cast.Event{Time: 5}
+			event9 = &cast.Event{Time: 9}
+			event10 = &cast.Event{Time: 10}
+			event11 = &cast.Event{Time: 11}
+
+			data = &cast.Cast{
+				EventStream: []*cast.Event{
+					event1,
+					event2,
+					event5,
+					event9,
+					event10,
+					event11,
+				},
+			}
+		})
+
+		Context("cuts down delays with a single range", func() {
+			var ranges []editor.QuantizeRange
+
+			JustBeforeEach(func() {
+				ranges = []editor.QuantizeRange{{2, 6}}
+				err = editor.Quantize(data, ranges)
+				Expect(err).To(Succeed())
+			})
+
+			It("modifies the timestamps accordingly", func() {
+				Expect(event1.Time).To(Equal(float64(1)),
+					"first")
+				Expect(event2.Time).To(Equal(float64(2)),
+					"second")
+				Expect(event5.Time).To(Equal(float64(4)),
+					"third")
+				Expect(event9.Time).To(Equal(float64(6)),
+					"fourth")
+				Expect(event10.Time).To(Equal(float64(7)),
+					"fifth")
+				Expect(event11.Time).To(Equal(float64(8)),
+					"sixth")
+			})
+		})
+	})
 })
