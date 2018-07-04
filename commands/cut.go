@@ -50,12 +50,12 @@ EXAMPLES:
 	},
 }
 
-type CutTransformation struct {
+type cutTransformation struct {
 	from float64
 	to   float64
 }
 
-func (t *CutTransformation) Transform(c *cast.Cast) (err error) {
+func (t *cutTransformation) Transform(c *cast.Cast) (err error) {
 	err = editor.Cut(c, t.from, t.to)
 	return
 }
@@ -64,7 +64,7 @@ func cutAction(c *cli.Context) (err error) {
 	var (
 		input          = c.Args().First()
 		output         = c.String("out")
-		transformation = &CutTransformation{
+		transformation = &cutTransformation{
 			from: c.Float64("start"),
 			to:   c.Float64("end"),
 		}

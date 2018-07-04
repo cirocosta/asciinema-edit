@@ -59,13 +59,13 @@ EXAMPLES:
 	},
 }
 
-type SpeedTransformation struct {
+type speedTransformation struct {
 	from   float64
 	to     float64
 	factor float64
 }
 
-func (t *SpeedTransformation) Transform(c *cast.Cast) (err error) {
+func (t *speedTransformation) Transform(c *cast.Cast) (err error) {
 	if t.from == 0 && t.to == 0 {
 		t.from = c.EventStream[0].Time
 		t.to = c.EventStream[len(c.EventStream)-1].Time
@@ -79,7 +79,7 @@ func speedAction(c *cli.Context) (err error) {
 	var (
 		input          = c.Args().First()
 		output         = c.String("out")
-		transformation = &SpeedTransformation{
+		transformation = &speedTransformation{
 			factor: c.Float64("factor"),
 			from:   c.Float64("start"),
 			to:     c.Float64("end"),
