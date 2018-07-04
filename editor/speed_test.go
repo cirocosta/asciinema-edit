@@ -28,9 +28,11 @@ var _ = Describe("Speed", func() {
 		})
 
 		Context("with an empty event stream", func() {
-			var data = &cast.Cast{
-				EventStream: []*cast.Event{},
-			}
+			JustBeforeEach(func() {
+				data = &cast.Cast{
+					EventStream: []*cast.Event{},
+				}
+			})
 
 			It("errors", func() {
 				err := editor.Speed(data, 1, 1, 2)
