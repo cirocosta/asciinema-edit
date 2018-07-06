@@ -64,6 +64,9 @@ var _ = Describe("ParseQuantizeRange", func() {
 		Context("that is unbounded", func() {
 			BeforeEach(func() {
 				input = "1.2"
+			})
+
+			JustBeforeEach(func() {
 				qRange, err = commands.ParseQuantizeRange(input)
 			})
 
@@ -77,6 +80,16 @@ var _ = Describe("ParseQuantizeRange", func() {
 
 			It("ends with the closes to infinit (max float)", func() {
 				Expect(qRange.To).To(Equal(math.MaxFloat64))
+			})
+
+			Context("with negative lower bound", func() {
+				BeforeEach(func() {
+					input = "-1.2"
+				})
+
+				It("fails", func() {
+					Expect(err).ToNot(Succeed())
+				})
 			})
 		})
 

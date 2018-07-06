@@ -121,6 +121,12 @@ func ParseQuantizeRange(input string) (res editor.QuantizeRange, err error) {
 		res.To = math.MaxFloat64
 	}
 
+	if res.From < 0 {
+		err = errors.Errorf(
+			"constraint not verified: from >= 0")
+		return
+	}
+
 	if res.To <= res.From {
 		err = errors.Errorf(
 			"constraint not verified: from < to")
