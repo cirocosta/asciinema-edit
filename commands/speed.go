@@ -91,6 +91,7 @@ func speedAction(c *cli.Context) (err error) {
 		err = cli.NewExitError(err, 1)
 		return
 	}
+	defer t.Close()
 
 	err = t.Transform()
 	if err != nil {
@@ -98,6 +99,5 @@ func speedAction(c *cli.Context) (err error) {
 		return
 	}
 
-	t.Close()
 	return
 }
