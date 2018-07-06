@@ -22,15 +22,15 @@ var Speed = cli.Command{
    (default).
 
 EXAMPLES:
-   Make the whole cast ("123.cast") twice as fast:
+   Make the whole cast ("123.cast") twice as slow:
 
      asciinema-edit speed --factor 2 ./123.cast
 
-   Cut the speed in half:
+   Cut the duration in half:
 
      asciinema-edit speed --factor 0.5 ./123.cast
 
-   Make only a certain part of the video twice as fast:
+   Make only a certain part of the video twice as slow:
 
      asciinema-edit speed \
         --factor 2 \
