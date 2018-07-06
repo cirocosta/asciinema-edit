@@ -16,22 +16,6 @@ type QuantizeRange struct {
 	To float64
 }
 
-// NewQuantizeRange creates a new quantize range performing some basic
-// validations:
-// - `from` < `to`
-func NewQuantizeRange(from, to float64) (q *QuantizeRange, err error) {
-	if from < to {
-		err = errors.Errorf("constraint not satisfied: from < to")
-		return
-	}
-
-	q = &QuantizeRange{
-		From: from,
-		To:   to,
-	}
-	return
-}
-
 // InRange verifies whether a given value lies within the quantization
 // range.
 func (q *QuantizeRange) InRange(value float64) bool {
