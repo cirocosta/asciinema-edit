@@ -3,8 +3,9 @@ package cast_test
 import (
 	"bufio"
 	"bytes"
-	"github.com/cirocosta/asciinema-edit/cast"
 	"io"
+
+	"github.com/cirocosta/asciinema-edit/cast"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
