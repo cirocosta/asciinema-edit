@@ -65,7 +65,7 @@ type Header struct {
 
 	// IdleTimeLimit specifies the maximum amount of idleness between
 	// one command and another.
-	IdleTimeLimit float64 `json:"title,omitempty"`
+	IdleTimeLimit float64 `json:"idle_time_limit,omitempty"`
 
 	// Env specifies a map of environment variables captured by the
 	// asciinema command.
