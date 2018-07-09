@@ -383,7 +383,7 @@ var _ = Describe("Cast", func() {
 				)
 
 				BeforeEach(func() {
-					reader = bytes.NewBufferString(`{"version": 2, "width":123}
+					reader = bytes.NewBufferString(`{"version": 2, "width":123, "idle_time_limit": 1, "timestamp": 2, "command": "/bin/sh", "title": "test", "env": {"SHELL": "/bin/sh", "TERM": "a-term256"}, "theme": { "fg": "#aaa", "bg":"#bbb", "palette": "a,b,c" }}
 [1,"o", "lol"]
 [2,"o", "lol"]`)
 					decodedCast, err = cast.Decode(reader)
