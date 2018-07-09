@@ -31,7 +31,7 @@ Being a Golang application, you can either build it yourself with `go get` or fe
 go get -u -v github.com/cirocosta/asciinema-edit
 
 #Retrieving from GitHub releases
-VERSION=0.0.3
+VERSION=0.0.5
 curl -SOL https://github.com/cirocosta/asciinema-edit/releases/download/$VERSION/asciinema-edit_$VERSION_linux_amd64.tar.gz
 ```
 
