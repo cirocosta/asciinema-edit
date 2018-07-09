@@ -24,13 +24,13 @@ EXAMPLES:
 
      cat 1234.cast | \
        asciinema-edit cut \
-         --from=12.2 --to=15.3
+         --start=12.2 --end=15.3
 
    Remove the exact frame at timestamp 12.2 from the cast file named
    1234.cast.
 
      asciinema-edit cut \
-       --from=12.2 --to=12.2 \
+       --start=12.2 --end=12.2 \
        1234.cast`,
 	ArgsUsage: "[filename]",
 	Action:    cutAction,
