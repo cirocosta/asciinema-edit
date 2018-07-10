@@ -111,4 +111,85 @@ var _ = Describe("Transformer", func() {
 			})
 		})
 	})
+
+	Describe("transform", func() {
+		var (
+			trans  *transformer.Transformer
+			input  string
+			output = "/dev/null"
+			err    error
+		)
+
+		JustBeforeEach(func() {
+			trans, err = transformer.New(
+				&DummyTransformation{},
+				input,
+				output)
+			Expect(err).To(Succeed())
+		})
+
+		AfterEach(func() {
+			os.Remove(input)
+		})
+
+		Context("with malformed input", func() {
+			BeforeEach(func() {
+				input, err = createTempFileWithContent("malformed")
+				Expect(err).To(Succeed())
+			})
+
+			It("fails", func() {
+				err = trans.Transform()
+				Expect(err).ToNot(Succeed())
+			})
+		})
+
+		Context("with malformed event stream", func() {
+			BeforeEach(func() {
+				input, err = createTempFileWithContent(`{"version": 2, "width": 123, "height": 123}
+[1, "o", "aaa"]
+[3, "o", "ccc"]
+[2, "o", "bbb"]`)
+				Expect(err).To(Succeed())
+			})
+
+			It("fails", func() {
+				err = trans.Transform()
+				Expect(err).ToNot(Succeed())
+			})
+		})
+
+		Context("with well formed event stream", func() {
+			BeforeEach(func() {
+				input, err = createTempFileWithContent(`{"version": 2, "width": 123, "height": 123}
+[1, "o", "aaa"]
+[2, "o", "bbb"]
+[3, "o", "ccc"]`)
+				Expect(err).To(Succeed())
+			})
+
+			It("succeeds", func() {
+				err = trans.Transform()
+				Expect(err).To(Succeed())
+			})
+		})
+	})
 })
+
+func createTempFileWithContent(content string) (res string, err error) {
+	var file *os.File
+
+	file, err = ioutil.TempFile("", "")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	_, err = file.Write([]byte(content))
+	if err != nil {
+		return
+	}
+
+	res = file.Name()
+	return
+}
