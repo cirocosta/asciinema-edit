@@ -106,6 +106,13 @@ func (m *Transformer) Transform() (err error) {
 		return
 	}
 
+	_, err = cast.Validate(decodedCast)
+	if err != nil {
+		err = errors.Wrapf(err,
+			"invalid input cast")
+		return
+	}
+
 	err = m.transformation.Transform(decodedCast)
 	if err != nil {
 		err = errors.Wrapf(err,
