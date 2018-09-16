@@ -72,7 +72,7 @@ NAME:
 EXAMPLES:
    Make the whole cast have a maximum delay of 1s:
 
-     asciinema-edit quantize --range 2 ./123.cast
+     asciinema-edit quantize --range 1 ./123.cast
 
    Make the whole cast have time delays between 300ms and 1s cut to
    300ms, delays between 1s and 2s cut to 1s and any delays bigger
