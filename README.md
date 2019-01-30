@@ -70,7 +70,7 @@ NAME:
    (default).
 
 EXAMPLES:
-   Make the whole cast have a maximum delay of 1s:
+   Make the whole cast have a maximum delay of 2s:
 
      asciinema-edit quantize --range 2 ./123.cast
 
@@ -151,7 +151,7 @@ NAME:
    (default).
 
 EXAMPLES:
-   Remove frames from 12.2s to 16.3s from the cast passed in the commands
+   Remove frames from 12.2s to 15.3s from the cast passed in the commands
    stdin.
 
      cat 1234.cast | \
