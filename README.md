@@ -31,9 +31,10 @@ Being a Golang application, you can either build it yourself with `go get` or fe
 go get -u -v github.com/cirocosta/asciinema-edit
 
 #Retrieving from GitHub releases
-VERSION=0.0.6
-curl -SOL https://github.com/cirocosta/asciinema-edit/releases/download/$VERSION/asciinema-edit_$VERSION_linux_amd64.tar.gz
-```
+(export LATEST=$(curl -s https://api.github.com/repos/cirocosta/asciinema-edit/releases/latest | grep -o -E "https://.+?linux_amd64.tar.gz");
+ echo "$LATEST"; curl -SLO "$LATEST";
+ tar xzvf $(basename "$LATEST"))
+ ```
 
 ### Quantize
 
