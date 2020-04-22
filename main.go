@@ -1,8 +1,11 @@
 package main
 
 import (
+	"io"
 	"os"
+	"strings"
 
+	"github.com/Masterminds/sprig"
 	"github.com/cirocosta/asciinema-edit/commands"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -12,7 +15,23 @@ var (
 	commit  = "HEAD"
 )
 
+var CmdHelpOld = `COMMANDS:{{range .VisibleCategories}}{{if .Name}}
+   {{.Name}}:{{end}}{{range .VisibleCommands}}
+     {{join .Names ", "}}{{"\t"}}{{.Usage}}{{end}}{{end}}`
+
+var CmdHelpNew = `COMMANDS:{{range .VisibleCommands}}
+
+{{.Name}}
+
+  {{.Usage | indent 2}}{{end}}
+`
+
 func main() {
+	cli.HelpPrinter = func(w io.Writer, templ string, data interface{}) {
+		cli.HelpPrinterCustom(w, templ, data, sprig.FuncMap())
+	}
+	cli.AppHelpTemplate = strings.Replace(cli.AppHelpTemplate, CmdHelpOld, CmdHelpNew, 1)
+
 	app := cli.NewApp()
 
 	app.Version = version + " - " + commit
