@@ -35,7 +35,7 @@ EXAMPLES:
      asciinema-edit speed \
         --factor 2 \
         --start 12.231 \
-        --factor 45.333 \
+        --end 45.333 \
         ./123.cast`,
 	ArgsUsage: "[filename]",
 	Action:    speedAction,
