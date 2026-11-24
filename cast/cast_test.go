@@ -310,12 +310,25 @@ var _ = Describe("Cast", func() {
 				Expect(err).To(Succeed())
 			})
 
+			It("preserves a recorded color theme", func() {
+				themed := data
+				themed.Header.Theme.Fg = "#ffffff"
+				themed.Header.Theme.Bg = "#000000"
+				themed.Header.Theme.Palette = "#000000:#aa0000:#00aa00:#aaaa00:#0000aa:#aa00aa:#00aaaa:#aaaaaa"
+
+				var out bytes.Buffer
+				Expect(cast.Encode(&out, &themed)).To(Succeed())
+				decoded, err := cast.Decode(&out)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(decoded.Header.Theme).To(Equal(themed.Header.Theme))
+			})
+
 			It("has the header in the first line", func() {
 				ok := scanner.Scan()
 				Expect(ok).To(BeTrue())
 
 				Expect(scanner.Text()).To(Equal(
-					`{"version":2,"width":10,"height":10,"theme":{},"env":{}}`))
+					`{"version":2,"width":10,"height":10,"env":{}}`))
 			})
 
 			It("has the first event in the second line", func() {

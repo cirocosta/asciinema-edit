@@ -222,7 +222,17 @@ func Encode(writer io.Writer, cast *Cast) (err error) {
 	encoder := json.NewEncoder(writer)
 	encoder.SetIndent("", "")
 
-	err = encoder.Encode(&cast.Header)
+	// A struct with omitempty still encodes as {}. Only emit the theme when
+	// the recording includes colors.
+	header := struct {
+		*Header
+		Theme interface{} `json:"theme,omitempty"`
+	}{Header: &cast.Header}
+	if theme := cast.Header.Theme; theme.Fg != "" || theme.Bg != "" || theme.Palette != "" {
+		header.Theme = theme
+	}
+
+	err = encoder.Encode(header)
 	if err != nil {
 		err = errors.Wrapf(err,
 			"failed to encode header")
